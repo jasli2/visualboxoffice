@@ -2,358 +2,38 @@
 <html lang='en'>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>movie repo</title>
-	<style>
-		body {
-			/*background-color: #ebdece;*/
-		}
-		#chart-container {
-			margin: auto;
-			width: 1200px;
-		}
-	</style>
-
+	<title>visualboxoffice</title>
+	<link href="style.css" rel="stylesheet">
 </head>
 <body>
 	<div id='chart-container'></div>
+	<div id="tooltip-film">
+		<div id="tooltip-film-container">
+			<div id="tooltip-name"></div>
+			<div class="tooltip-key">评分</div>
+			<div id="tooltip-rate"></div>
+			<div class="tooltip-key">上映时间</div>
+			<div id="tooltip-release-date"></div>
+			<div class="tooltip-key">累计票房（万）</div>
+			<div id="tooltip-film-boxoffice"></div>
+			<div class="tooltip-key">年票房排名</div>
+			<div id="tooltip-rank"></div>
+		</div>
+	</div>
+	<div id="tooltip-boxoffice">
+		<div id="tooltip-boxoffice-container">
+			<div id="tooltip-year"></div>
+			<div class="tooltip-key">总票房（亿）</div>
+			<div id="tooltip-total"></div>
+			<div class="tooltip-key">总票房增幅（%）</div>
+			<div id="tooltip-total-inc"></div>
+			<div class="tooltip-key">国产电影票房（亿）</div>
+			<div id="tooltip-local"></div>
+			<div class="tooltip-key">国产电影票房增幅（%）</div>
+			<div id="tooltip-local-inc"></div>
+		</div>
+	</div>
 	<script src="d3.v5.min.js"></script>
-	<!-- // <script src="https://d3js.org/d3.v4.min.js"></script> -->
-	<script type="text/javascript">
-		//https://piaofang.maoyan.com/boxoffice/3?date=2018&cnt=10
-		var test;
-
-		var data_files = ["boxoffice.csv", "films.csv"];
-		Promise.all(data_files.map(url => d3.csv(url))).then(function(data) {
-			var boxoffice_data = data[0];
-			var film_data = data[1];
-
-			var number_of_years = boxoffice_data.length;
-			var margin = {top: 40, right: 10, bottom: 20, left: 10};
-			var chart_header_height = 80;
-			var year_height = 60;
-			var year_padding = 40;
-			var year_label_width = 30;
-			var film_chart_width = 720; // for a year
-			var film_chart_top_padding = 40;
-			var film_chart_height = (number_of_years - 1) * year_height + film_chart_top_padding * 2;
-			var boxoffice_chart_width = 300;
-			var svg_width = 1200;
-			var svg_height = (number_of_years - 1) * year_height + film_chart_top_padding * 2 + margin.top + margin.bottom + chart_header_height;
-
-			var svg = d3.select("#chart-container")
-				.append('svg')
-				.attr("width", svg_width)
-				.attr("height", svg_height)
-				.append("g")
-				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-			var g_films_header = svg.append('g').attr("transform", "translate(" + 0 + "," + 0 + ")");
-			var g_films_chart = svg.append('g').attr("transform", "translate(" + 0 + "," + chart_header_height + ")");
-			var g_year = svg.append('g').attr("transform", "translate(" + (film_chart_width + year_padding) + "," + chart_header_height + ")");
-			var g_boxoffice_header = svg.append('g').attr("transform", "translate(" + (film_chart_width + year_label_width + 2*year_padding) + "," + 0 + ")");
-			var g_boxoffice_chart = svg.append('g').attr("transform", "translate(" + (film_chart_width + year_label_width + 2*year_padding) + "," + chart_header_height + ")");
-
-			// var ft_colors = ["#ffbb74", "#fd655a", "#2ac0c6", "#704019", "#6b998b", "#d9321b", "#f1b251", "#f0d2ab"];
-			var month_axis_x = d3.scaleLinear().domain([1, 13]).range([0, film_chart_width]);
-			var monthes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];	// TODO
-			var square_r = d3.scaleSqrt();
-
-			var group_data = d3.nest().key(function(d) {return d.year;}).entries(film_data);
-			var film_types = film_data.map(function(d) {return d.type;}).filter(function(e, i, self) {return i == self.indexOf(e)});
-			var ft_class = function(type) {
-				switch (type) {
-			    case "动作":
-			      return "f-action";
-			    case "喜剧":
-			      return "f-comedy";
-			    case "奇幻":
-			      return "f-fantasy";
-			    case "科幻":
-			      return "f-sic-fi";
-			    case "战争":
-			      return "f-war";
-			    case "动画":
-			      return "f-animation";
-			    case "剧情":
-			      return "f-drama";
-			    case "爱情":
-			      return "f-romance";
-			    case "灾难":
-			      return "f-disaster";
-			    case "惊悚":
-			      return "f-thriller";
-			    default:
-			    	return "";
-				}
-			};
-
-			// need to find a nice color theme.
-			var ft_colors = ["#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00", "#cab2d6", "#6a3d9a", "#b15928", "#ffff99"];
-			// test = types;
-
-			var year_labels = g_year.selectAll('.group_year')
-				.data(group_data)
-				.enter()
-				.append('text')
-				.attr("class", 'group_year')
-				.attr("font-size", 20)
-				.attr("font-weight", "bold")
-				.attr("fill", "gray")
-				.attr("font-family", "monospace")
-				.attr("dominant-baseline", "central")
-				.attr("text-anchor", "middle")
-				.attr("transform", function(d, i) {
-					return "translate(" + year_label_width / 2 + "," + (i * year_height + film_chart_top_padding) + ")";
-				})
-				.text(function(d) {return d.key;});
-
-			// draw chart header
-			g_films_header.append('text')
-				.attr("font-size", 20)
-				.attr("fill", "gray")
-				.attr("text-anchor", "middle")
-				.attr("transform", function(d, i) {
-					return "translate(" + film_chart_width / 2 + "," + 0 + ")";
-				})
-				.text("年度票房前十");
-
-			var film_chart_legend = g_films_header.append('g')
-				.attr("font-family", "sans-serif")
-	      .attr("font-size", 10)
-	      .attr("transform", "translate(" + 30 + "," + 40 + ")");
-
-	    var film_type_legend = film_chart_legend.selectAll("g")
-	      .data(film_types)
-	      .enter()
-	      .append("g")
-	      .attr("transform", function(d, i) { return "translate(" + i * 50 + "," + 0 + ")"; });
-
-	    film_type_legend.append("rect")
-	    	.attr("width", 20)
-	    	.attr("height", 16)
-	    	.attr("transform", "translate(" + 0 + "," + "-12" + ")")
-	    	.attr("fill", function(d, i) { return ft_colors[i]; })
-	    	.on("mouseover", function(d, i){
-	    		var target_film_class = '.' + ft_class(d);
-	    		d3.selectAll(".film").style("opacity", 0.1);
-	    		d3.selectAll(target_film_class).style("opacity", 1);
-	    	})
-	    	.on("mouseout", function(d, i){
-	    		d3.selectAll(".film").style("opacity", 0.8);
-	    	});
-
-	    film_type_legend.append("text")
-		    .attr("dominant-baseline", "center")
-	    	.attr("transform", function(d, i) { return "translate(" + 22 + "," + 0 + ")"; })
-	    	.text(function(d) {return d;});
-
-	    var film_boxoffice_legend = film_chart_legend.append('g').attr("transform", "translate(" + 600 + "," + 0 + ")");
-	    film_boxoffice_legend.append("circle")
-	    	.attr("cx", 0)
-	    	.attr("cy", -4)
-	    	.attr("r", 12)
-	    	.attr("opacity", 0.8)
-	    	.attr("fill", "gray");
-	    film_boxoffice_legend.append("circle")
-	    	.attr("cx", 0)
-	    	.attr("cy", -4)
-	    	.attr("r", 1)
-	    	.attr("fill", "black");
-	    film_boxoffice_legend.append("text")
-		    .attr("dominant-baseline", "center")
-	    	.attr("transform", function(d, i) { return "translate(" + 20 + "," + 0 + ")"; })
-	    	.text("累计票房");
-
-			g_boxoffice_header.append('text')
-				.attr("font-size", 20)
-				.attr("fill", "gray")
-				.attr("text-anchor", "middle")
-				.attr("transform", function(d, i) {
-					return "translate(" + boxoffice_chart_width / 2 + "," + 0 + ")";
-				})
-				.text("年度总票房");
-
-			//draw boxoffice chart legend
-
-			// draw top 10 films chart
-			var month_axis_g = g_films_chart.selectAll('.month')
-				.data(monthes)
-				.enter()
-				.append('g')
-				.attr("class", "month")
-				.attr("opacity", 1)
-				.attr("font-size", 10)
-				.attr("font-family", "sans-serif")
-				.attr("transform", function(d, i) {
-					return "translate(" + month_axis_x(d) + "," + 0 + ")";
-				});
-
-			var month_axis = month_axis_g.append("line")
-				.attr("y2", film_chart_height)
-				.attr("stroke", "gray")
-				.attr("shape-rendering", "crispEdges");
-
-			var month_text_top = month_axis_g.append('text')
-				.attr("transform", "translate(" + 30 + "," + 0 + ")")
-				.attr("text-anchor", "middle")
-				.text(function(d) {
-					if(d < 13) return d + "月";
-				});
-			var month_text_bottom = month_axis_g.append('text')
-				.attr("transform", "translate(" + 30 + "," + film_chart_height + ")")
-				.attr("text-anchor", "middle")
-				.attr("dominant-baseline", "hanging")
-				.text(function(d) {
-					if(d < 13) return d + "月";
-				});
-
-			var top10 = g_films_chart.selectAll('.group_film')
-				.data(group_data)
-				.enter()
-				.append('g')
-				.attr("class", "group_film")
-				.attr("transform", function(d, i) {
-					return "translate(" + 0 + "," + (i * year_height + film_chart_top_padding) + ")";
-				})
-
-			top10.append('line')
-				.attr("x2", film_chart_width)
-				.attr("stroke", "gray")
-				.attr("shape-rendering", "crispEdges").style("stroke-dasharray", ("2, 2"));
-
-			var films = top10.selectAll('.film')
-				.data(function(d) { return d.values; })
-				.enter()
-				.append('circle')
-				.attr("class", function(d) {return "film " + ft_class(d.type);})
-				.attr("cx", function(d) {
-					var date = d.release_date.split('-');
-					var month = +date[1];
-					var day = +date[2];
-					return (30*(month-1)+day)*2;
-				})
-				.attr("cy", 0)
-				.attr("r", function(d) {return Math.round(square_r(d.box_office/10000)*5); })
-				.attr("fill", function(d) { return ft_colors[film_types.indexOf(d.type)]; })
-				.style('opacity', 0.8)
-				.on("mouseover", function(d, i){
-					d3.selectAll(".film").style("opacity", 0.1);
-					var r = +d3.select(this).attr("r") + 5;
-					d3.select(this)
-						.attr("r", r)
-						.style("opacity", 1);
-				})
-				.on("mouseout", function(d, i) {
-					var r = +d3.select(this).attr("r") - 5;
-					d3.select(this)
-						.attr("r", r)
-						.style("opacity", 0.8);
-					d3.selectAll(".film").style("opacity", 0.8);
-				});
-
-
-			top10.selectAll('.film-center')
-				.data(function(d) { return d.values; })
-				.enter()
-				.append('circle')
-				.attr("class", "film-center")
-				.attr("cx", function(d) {
-					var date = d.release_date.split('-');
-					var month = +date[1];
-					var day = +date[2];
-					return (30*(month-1)+day)*2;
-				})
-				.attr("cy", 0)
-				.attr("r", 1)
-				.attr("fill", "black")
-				.style('opacity', 1);
-
-			// draw box office chart
-
-			// FIXME: we assume the laat year box office always the max number and have a '.' there.  `3`
-			var bo_range_max = (+boxoffice_data[0].total[0] + 1) * Math.pow(10, (boxoffice_data[0].total.indexOf('.') - 1));
-			var x = d3.scaleLinear().domain([0, bo_range_max]).range([0, boxoffice_chart_width]);
-			var x_inc = d3.scaleLinear().domain([-20, 100]).range([0, boxoffice_chart_width]);
-			var x_axis_top = d3.axisTop(x).ticks(7);
-			var x_axis_bottom = d3.axisBottom(x_inc).ticks(7).tickFormat(function(d) {return d + "%"});
-
-			g_boxoffice_chart.append("g").call(x_axis_top)
-				.append('text')
-				.attr("fill", "#000")
-				.attr("transform", "translate(" + 310 + "," + 14 + ")")
-				.attr("text-anchor", "end")
-				.text("单位：亿元");
-			g_boxoffice_chart.append("g").attr("transform", "translate(" + 0 + "," + film_chart_height + ")").call(x_axis_bottom);
-
-			var year_boxoffice = g_boxoffice_chart.selectAll('.year-boxoffice')
-				.data(boxoffice_data)
-				.enter()
-				.append('g')
-				.attr("class", 'year-boxoffice')
-				.attr("transform", function(d, i) {
-					return "translate(" + 0 + "," + (i * year_height + film_chart_top_padding) + ")";
-				});
-
-			var total_boxoffice_bar = year_boxoffice
-				.append('rect')
-				.attr('class', 'total-bar')
-				.attr('x', 0)
-				.attr('y', -15)
-				.attr('height', 14)
-				.attr('width', function(d) { return x(d.total); })
-				.style('opacity', 0.8)
-				.style('fill', '#264653');
-
-			var local_boxoffice_bar = year_boxoffice
-				.append('rect')
-				.attr('class', 'local-bar')
-				.attr('x', 0)
-				.attr('y', 1)
-				.attr('height', 14)
-				.attr('width', function(d) { return x(d.local_film); })
-				.style('opacity', 0.8)
-				.style('fill', '#F4A261');
-
-			var total_lines = d3.line()
-		    .x(function(d) { return x_inc(d.inc_rate); })
-		    .y(function(d) { return (2017-d.year) * year_height + film_chart_top_padding; })
-		    .curve(d3.curveMonotoneY);
-
-		  g_boxoffice_chart.append("path")
-        .datum(boxoffice_data)
-        .attr("class", "line")
-        .attr("fill", "none")
-        .attr("stroke", "#2A9D8F")
-        .attr("stroke-width", 2)
-        .attr("d", total_lines);
-
-		  var local_lines = d3.line()
-		    .x(function(d) { return x_inc(d.local_film_inc_rate); })
-		    .y(function(d) { return (2017-d.year) * year_height + film_chart_top_padding; })
-		    .curve(d3.curveMonotoneY);
-
-		  g_boxoffice_chart.append("path")
-        .datum(boxoffice_data)
-        .attr("class", "line")
-        .attr("fill", "none")
-        .attr("stroke", "#E76F51")
-        .attr("stroke-width", 2)
-        .attr("d", local_lines);
-
-      year_boxoffice
-		  	.append("circle")
-		  	.attr("cx", function(d) { return x_inc(d.inc_rate); })
-		  	.attr("cy", 0)
-		  	.attr("r", 3)
-		  	.attr("fill", "#2A9D8F");
-
-      year_boxoffice
-		  	.append("circle")
-		  	.attr("cx", function(d) { return x_inc(d.local_film_inc_rate); })
-		  	.attr("cy", 0)
-		  	.attr("r", 3)
-		  	.attr("fill", "#E76F51");
-		});
-
-	</script>
+	<script src="main.js"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-rank,name,year,type,score,release_date,box_office
+rank,name,year,type,rate,release_date,box_office
 1,战狼2,2017,动作,7.2,2017-07-17,567877.4
 2,速度与激情8,2017,动作,7.1,2017-04-14,267095.7
 3,羞羞的铁拳,2017,喜剧,7.0,2017-09-30,220174.9
