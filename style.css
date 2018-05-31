@@ -1,10 +1,35 @@
 body {
 	/*background-color: #ebdece;*/
+	font-family: sans-serif;
+}
+
+p {
+	margin: 0;
+}
+
+a:link {
+	color: gray;
+}
+
+a:visited {
+  color: gray;
 }
 
 #chart-container {
 	margin: auto;
 	width: 1200px;
+	min-height: 760px;
+}
+
+#footer {
+	font-size: 10px;
+	color: gray;
+	text-align: right;
+	width: 1200px;
+	margin: auto;
+	margin-top: 20px;
+	padding-left: 25px;
+	padding-right: 25px;
 }
 
 .year-label {
@@ -24,12 +49,10 @@ body {
 
 #film-chart-legend, #boxoffice-chart-legend{
 	font-size: 10px;
-	font-family: sans-serif;
 }
 
 .month-axis {
 	font-size: 10px;
-	font-family: sans-serif;
 	text-anchor: middle;
 }
 
@@ -48,7 +71,6 @@ text.month-axis-label-bottom {
 
 .film-name {
 	font-size: 10px;
-	font-family: sans-serif;
 }
 
 .boxoffice-axis-top line {
@@ -64,7 +86,6 @@ text.month-axis-label-bottom {
 
 .year-boxoffice {
 	font-size: 10px;
-	font-family: sans-serif;
 }
 
 #tooltip-film, #tooltip-boxoffice {
