@@ -2,14 +2,12 @@
 China boxoffice data visualization using d3js.
 
 #### Feature
-- Top 10 films since 2008.
-- Yearly boxoffice and increase rate.
+- Daily boxoffice for whole year.
+- Daily released films and boxoffice information.
 - Tooltip
 
 #### Todo
 - Crawler to collecting data automatically.
-- More detailed data like monthly boxoffice or realtime boxoffice data.
-- Fancy color theme.
 
 #### License
 MIT

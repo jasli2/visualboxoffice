@@ -33,37 +33,53 @@
 	<link href="style.css" rel="stylesheet">
 </head>
 <body>
-	<div id='chart-container'></div>
-	<div id='footer'>
-		<p>设计实现 by <a href="http://lijc.cn">lijc</a></p>
-		<p>票房数据来源<a href="https://piaofang.maoyan.com">猫眼票房</a> 电影评分数据来源<a href="https://movie.douban.com">豆瓣电影</a></p>
-	</div>
-	<div id="tooltip-film">
-		<div id="tooltip-film-container">
-			<div id="tooltip-name"></div>
-			<div class="tooltip-key">评分</div>
-			<div id="tooltip-rate"></div>
-			<div class="tooltip-key">上映时间</div>
-			<div id="tooltip-release-date"></div>
-			<div class="tooltip-key">累计票房（万）</div>
-			<div id="tooltip-film-boxoffice"></div>
-			<div class="tooltip-key">年票房排名</div>
-			<div id="tooltip-rank"></div>
+	<h4 id="project-title">中国票房可视化项目</h4>
+	<select name="year" id="year-select">
+		<option value="2018" selected="selected">2018年</option>
+		<option value="2017">2017年</option>
+		<option value="2016">2016年</option>
+		<option value="2015">2015年</option>
+	</select>
+
+	<div id='chart-container'>
+
+		<div id="year-tooltip">
+			<h3 id="year-name"></h3>
+			<div class="line"></div>
+			<h6>累计总票房(亿元)</h6>
+			<p id="year-boxoffice"></p>
+			<h6>上映影片数量</h6>
+			<p id="year-film-count"></p>
+		</div>
+
+		<div id="film-tooltip">
+			<h3 id="film-name"></h3>
+			<div class="line"></div>
+			<h6>累计总票房(万元)</h6>
+			<p id="film-boxoffice"></p>
+			<h6>上映日期</h6>
+			<p id="film-released-date"></p>
+			<h6>上映天数</h6>
+			<p id="film-onshow-days"></p>
+			<h6>评分</h6>
+			<p id="film-rate"></p>
+		</div>
+
+		<div id="daily-boxoffice-tooltip">
+			<h3 id="do-date"></h3>
+			<div class="line"></div>
+			<h6>当日总票房(万元)</h6>
+			<p id="do-boxoffice"></p>
+			<h6>当日上映影片数量</h6>
+			<p id="do-film-count"></p>
 		</div>
 	</div>
-	<div id="tooltip-boxoffice">
-		<div id="tooltip-boxoffice-container">
-			<div id="tooltip-year"></div>
-			<div class="tooltip-key">总票房（亿）</div>
-			<div id="tooltip-total"></div>
-			<div class="tooltip-key">总票房增幅（%）</div>
-			<div id="tooltip-total-inc"></div>
-			<div class="tooltip-key">国产电影票房（亿）</div>
-			<div id="tooltip-local"></div>
-			<div class="tooltip-key">国产电影票房增幅（%）</div>
-			<div id="tooltip-local-inc"></div>
-		</div>
+
+	<div id="footer">
+		<p>Designed & Build By <a href=mailto:jasonliati@gmail.com>李江成</a></p>
+		<p>数据来源：猫眼票房</p>
 	</div>
+	<script src="moment.min.js"></script>
 	<script src="d3.v5.min.js"></script>
 	<script src="main.js"></script>
 </body>

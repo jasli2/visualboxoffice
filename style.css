@@ -1,153 +1,139 @@
 body {
-	/*background-color: #ebdece;*/
+	background-color: #eee;
 	font-family: sans-serif;
+	text-align: center;
 }
 
-p {
-	margin: 0;
-}
-
-a:link {
+a {
 	color: gray;
 }
 
-a:visited {
-  color: gray;
+h3 {
+	font-size: 1.5em;
+}
+
+#footer {
+	margin-top: 30px;
+	margin-bottom: 20px;
+}
+
+#footer > p {
+	font-size: 12px;
+	color: gray;
+	margin-bottom: 5px;
+	margin-top: 5px;
+}
+
+#project-title {
+	margin-top: 20px;
+	margin-bottom: 10px;
+	color: gray;
+	font-size: 1.3em;
 }
 
 #chart-container {
 	margin: auto;
 	width: 1200px;
-	min-height: 760px;
+	height: 1040px;
+	position: relative;
 }
 
-#footer {
-	font-size: 10px;
+.line {
+	border-bottom: 1px solid gray;
+	margin-left: 50px;
+	margin-right: 50px;
+	margin-bottom: 20px;
+}
+
+#year-tooltip {
+	width: 300px;
+	height: 260px;
+	background-color: #eee;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin: -130px 0 0 -150px;
+	text-align: center;
+	opacity: 1;
+}
+
+#year-tooltip > h6 {
 	color: gray;
-	text-align: right;
-	width: 1200px;
-	margin: auto;
-	margin-top: 20px;
-	padding-left: 25px;
-	padding-right: 25px;
+	margin-top: 10px;
+	margin-bottom: 5px;
+	font-size: 0.8em;
 }
 
-.year-label {
-	font-size: 20px;
-	font-weight: bold;
-	fill: gray;
-	font-family: monospace;
-	dominant-baseline: central;
-	text-anchor: middle;
+#year-tooltip > p {
+	margin-top: 0;
+	margin-bottom: 10px;
+	font-size: 1.3em;
 }
 
-.chart-header {
-	font-size: 20px;
-	fill: #1A1A1A;
-	text-anchor: middle;
+#year-name {
+	margin-top: 30px;
+	margin-bottom: 0px;
+	padding-bottom: 10px;
 }
 
-#film-chart-legend, #boxoffice-chart-legend{
-	font-size: 10px;
+#film-tooltip {
+	width: 300px;
+	height: 380px;
+	background-color: #eee;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin: -190px 0 0 -150px;
+	text-align: center;
+	opacity: 0;
 }
 
-.month-axis {
-	font-size: 10px;
-	text-anchor: middle;
+#film-tooltip > h6 {
+	color: gray;
+	margin-top: 10px;
+	margin-bottom: 5px;
+	font-size: 0.8em;
 }
 
-line.month-axis-line {
-	stroke: #C9C9C9;
-	shape-rendering: crispEdges;
+#film-tooltip > p {
+	margin-top: 0;
+	margin-bottom: 10px;
+	font-size: 1.3em;
 }
 
-text.month-axis-label-top {
-
+#film-name {
+	margin-top: 30px;
+	margin-bottom: 0px;
+	padding-bottom: 10px;
 }
 
-text.month-axis-label-bottom {
-	dominant-baseline: hanging;
+#daily-boxoffice-tooltip {
+	width: 300px;
+	height: 260px;
+	background-color: #eee;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin: -130px 0 0 -150px;
+	text-align: center;
+	opacity: 0;
 }
 
-.film-name {
-	font-size: 10px;
+#daily-boxoffice-tooltip > h6 {
+	color: gray;
+	margin-top: 10px;
+	margin-bottom: 5px;
+	font-size: 0.8em;
 }
 
-.boxoffice-axis-top line {
-	stroke: #C9C9C9;
-}
-.boxoffice-axis-top path {
-	stroke: #C9C9C9;
-}
-.boxoffice-axis-top text {
-	fill: #1A1A1A;
-	text-anchor: end;
+#daily-boxoffice-tooltip > p {
+	margin-top: 0;
+	margin-bottom: 10px;
+	font-size: 1.3em;
 }
 
-.year-boxoffice {
-	font-size: 10px;
-}
-
-#tooltip-film, #tooltip-boxoffice {
-  text-align: center;
-  z-index: 1000;
-  position: absolute;
-  opacity: 0;
-}
-
-#tooltip-film-container, #tooltip-boxoffice-container {
-  position: absolute;
-  bottom: 0;
-  width: 160px;
-  left: -80px; /* 250/2 */
-  line-height: 16px;
-  padding: 10px;
-  background: rgba(255,255,255,0.95);
-  box-shadow: 0 1px 5px rgba(0,0,0,0.2);
-  -moz-box-shadow: 0 1px 5px rgba(0,0,0,0.2);
-  border: 1px solid rgba(200,200,200,0.5);
-  cursor: default;
-  pointer-events: none;
-}
-
-.tooltip-key {
-	font-size: 12px;
-	color: #808080;
-	padding-top: 6px;
-	margin-bottom: 2px;
-}
-
-#tooltip-name {
-  font-size: 16px;
-  margin-bottom: 4px;
-  color: #333333;
-  margin-top: 5px;
-  text-align: center;
-  font-weight: 500;
-}
-
-#tooltip-year {
-  font-size: 16px;
-  margin-bottom: 4px;
-  color: #333333;
-  margin-top: 5px;
-  text-align: center;
-  font-weight: 500;
-}
-
-
-#tooltip-rate,
-#tooltip-release-date,
-#tooltip-film-boxoffice,
-#tooltip-rank {
-  font-size: 14px;
-  color: #333333;
-}
-
-#tooltip-total,
-#tooltip-local,
-#tooltip-total-inc,
-#tooltip-local-inc {
-	font-size: 14px;
-	color: #333333;
+#do-date {
+	margin-top: 30px;
+	margin-bottom: 0px;
+	padding-bottom: 10px;
 }
