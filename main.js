@@ -1,5 +1,5 @@
 var current_year = moment().year();
-var data_file = "data_" + current_year + ".json";
+var data_file = "/data/data_" + current_year + "_min.json";
 var cache_data = {};
 
 // handle select event
@@ -7,7 +7,7 @@ d3.select('select#year-select').on('change', function(d) {
 	console.log(d3.select(this).property("value"));
 
 	var year = d3.select(this).property("value");
-	var data_file = "data_" + year + ".json";
+	var data_file = "/data/data_" + year + "_min.json";
 
 	clear_chart();
 
@@ -71,7 +71,8 @@ function draw_chart(data) {
 	var year = +year_data.year;
 
 	// find the hightest boxoffice number
-	var max_daily_boxoffice = year_data.max_daily_boxoffice;
+	var max_daily_boxoffice = Math.max(year_data.max_daily_boxoffice, 50000);
+  var max_film_boxoffice = Math.max(year_data.max_film_boxoffice, 50000);
 
 	// set year boxoffice data
 	d3.select('#year-name').text(year_data.year + '年');
@@ -114,9 +115,13 @@ function draw_chart(data) {
     .domain([0, days_of_year-1])
     .range([0, 359]);
 
-  var colors = d3.scaleSqrt()
+  var do_colors = d3.scaleSqrt()
     .domain([0, max_daily_boxoffice])
     .range(['#108dc7', '#ef8e38']);
+  var film_colors = d3.scaleSqrt()
+    .domain([0, 1, max_film_boxoffice])
+    .range(['#ddd','#108dc7', '#ef8e38']);
+
 
   var start_date = moment([year]);
 
@@ -237,7 +242,7 @@ function draw_chart(data) {
 		.attr("height", function(d) { return y(d.boxoffice); })
 		.attr("rx", do_rect_width / 2)
 		.attr("ry", do_rect_width / 2)
-		.attr("fill", function(d) { return colors(d.boxoffice); })
+		.attr("fill", function(d) { return do_colors(d.boxoffice); })
 		.attr("transform", function(d, i) {
 			return "rotate(" + degree(i) + ")";
 		})
@@ -273,7 +278,7 @@ function draw_chart(data) {
 		.attr("cx", 0)
 		.attr("cy", function(d, i) { return (film_radius + i * (2 * film_circle_r + 2) ); })
 		.attr("r", film_circle_r)
-		.attr("fill", function(d) { return colors(d.boxoffice); })
+		.attr("fill", function(d) { return film_colors(d.boxoffice); })
 		.attr("class", function(d) {
 			return "film";
 		})
@@ -300,7 +305,7 @@ function draw_chart(data) {
 			.attr("height", function(d) { return y(d.boxoffice); })
 			.attr("rx", do_rect_width / 2)
 			.attr("ry", do_rect_width / 2)
-			.attr("fill", function(d) { return colors(d.boxoffice); })
+			.attr("fill", function(d) { return do_colors(d.boxoffice); })
 			.attr("transform", function(d, i) {
 				return "rotate(" + degree(moment(d.date).diff(start_date, 'days')) + "," + center_x + "," + center_y + ")";
 			});

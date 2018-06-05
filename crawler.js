@@ -51,27 +51,27 @@ var getUrl = function(content_type, url_str) {
 };
 
 var year;
+var now = moment();
+var yesterday = now.subtract(1, 'days');
+
 if(process.argv[2]) {
 	year = process.argv[2];
-	console.log("parse data for year: ", year);
 } else {
-	console.log("No year specified. Exit...");
-	process.exit(1);
+	year = yesterday.year();
 }
 
-var s_y = +year;
-var e_y = +year + 1;
-console.log(s_y);
-console.log(e_y);
+year = +year;
 
-var start_date = moment([s_y]);
-var end_date = moment([e_y]);
-if(moment().diff(end_date) < 0) {
-	end_date = moment();
+var start_date = moment([year]);
+var end_date = moment([year+1]);
+if(yesterday.diff(end_date, 'days') < 0) {
+	end_date = yesterday;
 }
 
-console.log(start_date);
-console.log(end_date);
+var logfile = './logs/' + now.format("YYYY-MM-DD-HH-mm-ss") + '.log';
+const log = require('simple-node-logger').createSimpleFileLogger(logfile);
+
+log.info("Start parsing: ", start_date.format("YYYY-MM-DD"), " - ", end_date.format("YYYY-MM-DD"));
 
 var dates = [];
 var bo = {
@@ -123,8 +123,6 @@ for (var m = moment(start_date); m.isBefore(end_date); m.add(1, 'day')) {
 	dates.push(m.format('YYYY-MM-DD'));
 };
 
-console.log(dates);
-
 Promise.map(dates, function(d) {
 	// get boxoffice of d
 	var daily_boxoffice_url = `https://box.maoyan.com/promovie/api/box/national.json?endDate=0&type=0&language=zh&beginDate=${d.replace(/-/g, '')}`;
@@ -144,7 +142,7 @@ Promise.map(dates, function(d) {
 
 			return Promise.map(films, function(movie){
 					const film_url = `https://piaofang.maoyan.com/movie/${movie.id}/boxshow`;
-					console.log("starting parsing... ", movie.nm, ':', movie.id);
+					log.info("parsing... ", movie.nm, ':', movie.id);
 					return getUrl('html', film_url)
 						.then(html => {
 							const $ = cheerio.load(html);
@@ -199,9 +197,14 @@ Promise.map(dates, function(d) {
 	});
 }, {concurrency: 1}).then(function(result) {
 	bo.daily_boxoffice = result;
-	console.log(bo);
-	var file_name = `data_${year}.json`;
+	log.info("done parsing, writing file");
+	var file_name = `./data/data_${year}.json`;
+	var min_file_name = `./data/data_${year}_min.json`;
 	fs.writeFile(file_name, JSON.stringify(bo, null, 2), 'utf8', function(err, result) {});
+	fs.writeFile(min_file_name, JSON.stringify(bo), 'utf8', function(err, result) {});
+}).catch(function(e) {
+	log.error(e);
+	throw e;
 });
 
 
