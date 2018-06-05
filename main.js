@@ -69,10 +69,18 @@ function draw_chart(data) {
 	var year_data = data;
 	var data = year_data.daily_boxoffice;
 	var year = +year_data.year;
+  var days_of_year = moment([year+1]).diff(moment([year]), 'days');
+  var days_of_yesterday = days_of_year;
+  if(year === current_year) {
+    days_of_yesterday = moment().subtract(1, "days").diff(moment([year]), 'days')
+  }
 
 	// find the hightest boxoffice number
-	var max_daily_boxoffice = Math.max(year_data.max_daily_boxoffice, 30000);
-  var max_film_boxoffice = Math.max(year_data.max_film_boxoffice, 30000);
+	var max_daily_boxoffice = Math.max(year_data.max_daily_boxoffice, 20000);
+  var max_film_boxoffice = Math.max(year_data.max_film_boxoffice, 20000);
+
+  var avg_daily_boxoffice = Math.max(Math.floor(year_data.boxoffice/days_of_yesterday), 10000);
+  var avg_film_boxoffice = Math.max(Math.floor(year_data.boxoffice/year_data.film_count), 10000);
 
 	// set year boxoffice data
 	d3.select('#year-name').text(year_data.year + '年');
@@ -94,7 +102,6 @@ function draw_chart(data) {
 	var film_radius = 300;
 
 	var max_do_height = 120;
-	var days_of_year = moment([year+1]).diff(moment([year]), 'days');
 
 	var svg = d3.select("#chart-container")
 		.append('svg')
@@ -115,12 +122,13 @@ function draw_chart(data) {
     .domain([0, days_of_year-1])
     .range([0, 359]);
 
+  // color : pun yeta
   var do_colors = d3.scaleLinear()
-    .domain([0, max_daily_boxoffice])
-    .range(['#108dc7', '#ef8e38']);
+    .domain([0, avg_daily_boxoffice, max_daily_boxoffice])
+    .range(['#108dc7', '#908d77', '#ef8e38']);
   var film_colors = d3.scaleLinear()
-    .domain([0, 1, max_film_boxoffice])
-    .range(['#ddd','#108dc7', '#ef8e38']);
+    .domain([0, 1, avg_film_boxoffice, max_film_boxoffice])
+    .range(['#ddd','#108dc7', '#908d77', '#ef8e38']);
 
 
   var start_date = moment([year]);
