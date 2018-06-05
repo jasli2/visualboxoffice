@@ -2,6 +2,7 @@ body {
 	background-color: #eee;
 	font-family: sans-serif;
 	text-align: center;
+	min-width: 1200px;
 }
 
 a {
