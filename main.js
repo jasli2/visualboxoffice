@@ -71,8 +71,8 @@ function draw_chart(data) {
 	var year = +year_data.year;
 
 	// find the hightest boxoffice number
-	var max_daily_boxoffice = Math.max(year_data.max_daily_boxoffice, 50000);
-  var max_film_boxoffice = Math.max(year_data.max_film_boxoffice, 50000);
+	var max_daily_boxoffice = Math.max(year_data.max_daily_boxoffice, 30000);
+  var max_film_boxoffice = Math.max(year_data.max_film_boxoffice, 30000);
 
 	// set year boxoffice data
 	d3.select('#year-name').text(year_data.year + '年');
@@ -103,7 +103,7 @@ function draw_chart(data) {
 		.append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-	var y = d3.scaleSqrt()
+	var y = d3.scaleLinear()
     .domain([0, max_daily_boxoffice])
     .range([0, max_do_height]);
 
@@ -115,10 +115,10 @@ function draw_chart(data) {
     .domain([0, days_of_year-1])
     .range([0, 359]);
 
-  var do_colors = d3.scaleSqrt()
+  var do_colors = d3.scaleLinear()
     .domain([0, max_daily_boxoffice])
     .range(['#108dc7', '#ef8e38']);
-  var film_colors = d3.scaleSqrt()
+  var film_colors = d3.scaleLinear()
     .domain([0, 1, max_film_boxoffice])
     .range(['#ddd','#108dc7', '#ef8e38']);
 
