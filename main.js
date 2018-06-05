@@ -15,15 +15,18 @@ d3.select('select#year-select').on('change', function(d) {
 		hide_year_tooltip();
 		draw_chart(cache_data[year]);
 	} else {
+		hide_year_tooltip();
+		show_loading_spin();
 		Promise.all([data_file].map(url => d3.json(url))).then(function(data) {
 			update_cache(data[0]);
-			hide_year_tooltip();
+			show_loading_spin();
 			draw_chart(data[0]);
 		});
 	}
 });
 
 //init draw
+show_loading_spin();
 Promise.all([data_file].map(url => d3.json(url))).then(function(data) {
 	update_cache(data[0]);
 	hide_year_tooltip();
@@ -36,6 +39,18 @@ function update_cache(data) {
 
 function clear_chart() {
 	d3.select('svg').remove();
+}
+
+function show_loading_spin() {
+	d3.select("#loading-spin")
+		.transition().duration(0)
+		.style("opacity", 1);
+}
+
+function hide_loading_spin() {
+	d3.select("#loading-spin")
+		.transition().duration(100)
+		.style("opacity", 0);
 }
 
 function show_year_tooltip(d) {
@@ -62,6 +77,8 @@ function draw_chart(data) {
 	d3.select('#year-name').text(year_data.year + '年');
 	d3.select('#year-boxoffice').text(Math.round(year_data.boxoffice/100) / 100);
 	d3.select('#year-film-count').text(year_data.film_count);
+
+	hide_loading_spin();
 	show_year_tooltip();
 
 	var margin = {top: 0, right: 0, bottom: 0, left: 0};
