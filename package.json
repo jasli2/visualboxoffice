@@ -1,0 +1,29 @@
+{
+  "name": "visualboxoffice",
+  "version": "1.0.0",
+  "description": "China boxoffice data visualization using d3js.",
+  "main": "index.js",
+  "dependencies": {
+    "array-flatten": "^2.1.1",
+    "bluebird": "^3.5.1",
+    "cheerio": "^1.0.0-rc.2",
+    "faker": "^4.1.0",
+    "moment": "^2.22.2",
+    "opentype.js": "^0.8.0",
+    "simple-node-logger": "^0.93.37"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jasli2/visualboxoffice.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jasli2/visualboxoffice/issues"
+  },
+  "homepage": "https://github.com/jasli2/visualboxoffice#readme"
+}

@@ -1,5 +1,4 @@
 const https = require('https');
-const flatten = require('array-flatten');
 const cheerio = require('cheerio');
 const fs = require('fs');
 const url = require('url');
