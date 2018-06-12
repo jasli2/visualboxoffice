@@ -6,6 +6,10 @@ const moment = require('moment');
 const Promise = require("bluebird");
 const opentype = require('opentype.js');
 
+var now = moment();
+var logfile = './logs/' + now.format("YYYY-MM-DD-HH-mm-ss") + '.log';
+const log = require('simple-node-logger').createSimpleFileLogger(logfile);
+
 var getUrl = function(content_type, url_str) {
 	return new Promise((resolve, reject) => {
 		var targetUrl = url.parse(url_str);
@@ -50,7 +54,6 @@ var getUrl = function(content_type, url_str) {
 };
 
 var year;
-var now = moment();
 var yesterday = now.subtract(1, 'days');
 
 if(process.argv[2]) {
@@ -66,11 +69,6 @@ var end_date = moment([year+1]);
 if(yesterday.diff(end_date, 'days') < 0) {
 	end_date = yesterday;
 }
-
-var logfile = './logs/' + now.format("YYYY-MM-DD-HH-mm-ss") + '.log';
-const log = require('simple-node-logger').createSimpleFileLogger(logfile);
-
-log.info("Start parsing: ", start_date.format("YYYY-MM-DD"), " - ", end_date.format("YYYY-MM-DD"));
 
 var dates = [];
 var bo = {
@@ -118,6 +116,8 @@ function str_unicode_map(str, uni_map) {
 	return s;
 };
 
+log.info("Start parsing: ", start_date.format("YYYY-MM-DD"), " - ", end_date.format("YYYY-MM-DD"));
+
 for (var m = moment(start_date); m.isBefore(end_date); m.add(1, 'day')) {
 	dates.push(m.format('YYYY-MM-DD'));
 };
@@ -125,6 +125,7 @@ for (var m = moment(start_date); m.isBefore(end_date); m.add(1, 'day')) {
 Promise.map(dates, function(d) {
 	// get boxoffice of d
 	var daily_boxoffice_url = `https://box.maoyan.com/promovie/api/box/national.json?endDate=0&type=0&language=zh&beginDate=${d.replace(/-/g, '')}`;
+  log.info("get data information: ", d);
 	return getUrl('json', daily_boxoffice_url).then(function(data) {
 		var daily_boxoffice_value = +data.data.totalBox;
 
@@ -132,6 +133,7 @@ Promise.map(dates, function(d) {
 		bo.boxoffice += daily_boxoffice_value;
 		if(daily_boxoffice_value > bo.max_daily_boxoffice) bo.max_daily_boxoffice = daily_boxoffice_value;
 
+    log.info("get film list: ", d);
 		var film_list_url = `https://api.maoyan.com/mmdb/movie/calendar/${d}/around/list.json`;
 		return getUrl('json', film_list_url).then(function(data) {
 			var films = data.data.movies.filter(movie => movie.isReleased === true && movie.rt === d);
