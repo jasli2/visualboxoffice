@@ -130,7 +130,6 @@ function draw_chart(data) {
     .domain([0, 1, avg_film_boxoffice, max_film_boxoffice])
     .range(['#ddd','#108dc7', '#908d77', '#ef8e38']);
 
-
   var start_date = moment([year]);
 
   // draw circle indication
@@ -199,46 +198,47 @@ function draw_chart(data) {
     .value((d) => d);
 
   var g1 = svg.selectAll(".arc1")
-      .data(pie([100]))
-    .enter().append("g")
-      .attr("class", "arc1")
-      .attr("transform", "translate(" + center_x + "," + center_y + ")")
-      .on('mouseenter', function(d) {
-      	d3.selectAll(".daily-boxoffice").style("opacity", 0.3);
-				d3.selectAll(".released-films").style("opacity", 0.3);
-				hide_year_tooltip(d);
-      })
-			.on("mouseleave", function(d, i){
-				d3.selectAll(".daily-boxoffice").style("opacity", 1);
-				d3.selectAll(".released-films").style("opacity", 1);
-				show_year_tooltip(d);
-			});
+    .data(pie([100]))
+    .enter()
+    .append("g")
+    .attr("class", "arc1")
+    .attr("transform", "translate(" + center_x + "," + center_y + ")")
+    .on('mouseenter', function(d) {
+      d3.selectAll(".daily-boxoffice").style("opacity", 0.3);
+      d3.selectAll(".released-films").style("opacity", 0.3);
+      hide_year_tooltip(d);
+    })
+    .on("mouseleave", function(d, i){
+      d3.selectAll(".daily-boxoffice").style("opacity", 1);
+      d3.selectAll(".released-films").style("opacity", 1);
+      show_year_tooltip(d);
+    });
 
   g1.append("path")
-      .attr("d", arc1)
-      .attr("fill", "#eee")
-      .attr('fill-opacity', 0);
+    .attr("d", arc1)
+    .attr("fill", "#eee")
+    .attr('fill-opacity', 0);
 
   var g2 = svg.selectAll(".arc2")
-      .data(pie([100]))
+    .data(pie([100]))
     .enter().append("g")
-      .attr("class", "arc2")
-      .attr("transform", "translate(" + center_x + "," + center_y + ")")
-      .on('mouseenter', function(d) {
-      	d3.selectAll(".daily-boxoffice").style("opacity", 0.3);
-				d3.selectAll(".film").style("opacity", 0.3);
-				hide_year_tooltip(d);
-      })
-			.on("mouseleave", function(d, i){
-				d3.selectAll(".daily-boxoffice").style("opacity", 1);
-				d3.selectAll(".film").style("opacity", 1);
-				show_year_tooltip(d);
-			});
+    .attr("class", "arc2")
+    .attr("transform", "translate(" + center_x + "," + center_y + ")")
+    .on('mouseenter', function(d) {
+      d3.selectAll(".daily-boxoffice").style("opacity", 0.3);
+      d3.selectAll(".film").style("opacity", 0.3);
+      hide_year_tooltip(d);
+    })
+    .on("mouseleave", function(d, i){
+      d3.selectAll(".daily-boxoffice").style("opacity", 1);
+      d3.selectAll(".film").style("opacity", 1);
+      show_year_tooltip(d);
+    });
 
   g2.append("path")
-      .attr("d", arc2)
-      .attr("fill", "#eee")
-      .attr('fill-opacity', 0);
+    .attr("d", arc2)
+    .attr("fill", "#eee")
+    .attr('fill-opacity', 0);
 
 	g1.selectAll('.daily-boxoffice')
 		.data(data)
