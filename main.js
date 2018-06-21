@@ -173,7 +173,7 @@ function draw_chart(data) {
   	.attr("transform", function(d, i) {
 			return "rotate(" + month_degree(moment([year, i, 15]).diff(start_date, 'days')) + "," + center_x + "," + center_y + ")";
 		})
-  	.attr('fill', '#ddd')
+  	.attr('fill', '#bbb')
   	.attr('dominant-baseline', 'central')
   	.attr('text-anchor', 'middle')
   	.attr('font-size', '10px')
