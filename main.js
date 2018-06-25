@@ -247,7 +247,6 @@ function draw_chart(data) {
 		.attr("x", -do_rect_width / 2)
 		.attr("y", do_radius)
 		.attr("width", do_rect_width)
-		.attr("height", function(d) { return y(d.boxoffice); })
 		.attr("rx", do_rect_width / 2)
 		.attr("ry", do_rect_width / 2)
 		.attr("fill", function(d) { return do_colors(d.boxoffice); })
@@ -264,7 +263,11 @@ function draw_chart(data) {
 		.on("mouseout", function(d, i){
 			d3.selectAll(".date-" + d.date).style("opacity", 0.3);
 			hide_daily_boxoffice_tooltip(d);
-		});
+		})
+    .transition()
+    .attr("height", function(d) { return y(d.boxoffice); })
+    .delay(function(d, i) { return i*5; })
+    .duration(100);
 
 	var detail_g = svg.append('g');
 
@@ -277,7 +280,8 @@ function draw_chart(data) {
 		})
 		.attr("transform", function(d, i) {
 			return "rotate(" + degree(i) + ")";
-		});
+		})
+    .style("opacity", 0);
 
 	gs.selectAll(".film")
 		.data(function(d) {return d.films; })
@@ -285,7 +289,7 @@ function draw_chart(data) {
 		.append('circle')
 		.attr("cx", 0)
 		.attr("cy", function(d, i) { return (film_radius + i * (2 * film_circle_r + 2) ); })
-		.attr("r", film_circle_r)
+    .attr("r", film_circle_r)
 		.attr("fill", function(d) { return film_colors(d.boxoffice); })
 		.attr("class", function(d) {
 			return "film";
@@ -301,6 +305,10 @@ function draw_chart(data) {
 			hide_film_tooltip(d);
 		});
 
+  gs.transition()
+    .style("opacity", 1)
+    .delay(function(d, i) { return i*5; })
+    .duration(100);
 
 	function draw_detail_boxoffice(d) {
 		detail_g.selectAll('rect')
@@ -310,13 +318,15 @@ function draw_chart(data) {
 			.attr("x", center_x - (do_rect_width/2))
 			.attr("y", center_y + do_radius)
 			.attr("width", do_rect_width)
-			.attr("height", function(d) { return y(d.boxoffice); })
 			.attr("rx", do_rect_width / 2)
 			.attr("ry", do_rect_width / 2)
 			.attr("fill", function(d) { return do_colors(d.boxoffice); })
 			.attr("transform", function(d, i) {
 				return "rotate(" + degree(moment(d.date).diff(start_date, 'days')) + "," + center_x + "," + center_y + ")";
-			});
+			})
+      .transition()
+      .attr("height", function(d) { return y(d.boxoffice); })
+      .duration(100);
 	};
 
 	function undraw_details_boxoffice(d) {
