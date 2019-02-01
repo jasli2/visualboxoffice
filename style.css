@@ -13,6 +13,10 @@ h3 {
 	font-size: 1.5em;
 }
 
+#year-select {
+    margin-bottom: 10px;
+}
+
 #footer {
 	margin-top: 30px;
 	margin-bottom: 20px;

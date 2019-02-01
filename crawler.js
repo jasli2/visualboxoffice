@@ -125,7 +125,7 @@ for (var m = moment(start_date); m.isBefore(end_date); m.add(1, 'day')) {
 Promise.map(dates, function(d) {
 	// get boxoffice of d
 	var daily_boxoffice_url = `https://box.maoyan.com/promovie/api/box/national.json?endDate=0&type=0&language=zh&beginDate=${d.replace(/-/g, '')}`;
-  log.info("get data information: ", d);
+    log.info("get data information: ", d);
 	return getUrl('json', daily_boxoffice_url).then(function(data) {
 		var daily_boxoffice_value = +data.data.totalBox;
 
@@ -133,7 +133,7 @@ Promise.map(dates, function(d) {
 		bo.boxoffice += daily_boxoffice_value;
 		if(daily_boxoffice_value > bo.max_daily_boxoffice) bo.max_daily_boxoffice = daily_boxoffice_value;
 
-    log.info("get film list: ", d);
+        log.info("get film list: ", d);
 		var film_list_url = `https://api.maoyan.com/mmdb/movie/calendar/${d}/around/list.json`;
 		return getUrl('json', film_list_url).then(function(data) {
 			var films = data.data.movies.filter(movie => movie.isReleased === true && movie.rt === d);
@@ -142,49 +142,49 @@ Promise.map(dates, function(d) {
 			bo.film_count += films.length;
 
 			return Promise.map(films, function(movie){
-					const film_url = `https://piaofang.maoyan.com/movie/${movie.id}/boxshow`;
-					log.info("parsing... ", movie.nm, ':', movie.id);
-					return getUrl('html', film_url)
-						.then(html => {
-							const $ = cheerio.load(html);
-							const font_encode_str = $('#js-nuwa').get()[0].children[0].data.split(';base64,')[1].split(') format(')[0];
-							const unicode_mapping = get_unicode_mapping(font_encode_str);
+				const film_url = `https://piaofang.maoyan.com/movie/${movie.id}/boxshow`;
+				log.info("parsing... ", movie.nm, ':', movie.id);
+				return getUrl('html', film_url)
+					.then(html => {
+						const $ = cheerio.load(html);
+						const font_encode_str = $('#js-nuwa').get()[0].children[0].data.split(';base64,')[1].split(') format(')[0];
+						const unicode_mapping = get_unicode_mapping(font_encode_str);
 
-							var box_text = $('i.cs').eq(0).text();
-							box_text = +str_unicode_map(box_text, unicode_mapping);
+						var box_text = $('i.cs').eq(0).text();
+						box_text = +str_unicode_map(box_text, unicode_mapping);
 
-							//update bo max film boxoffice
-							if(box_text > bo.max_film_boxoffice) bo.max_film_boxoffice = box_text;
+						//update bo max film boxoffice
+						if(box_text > bo.max_film_boxoffice) bo.max_film_boxoffice = box_text;
 
-							var details = [];
+						var details = [];
 
-							var d_dates = $('div.t-main-col > div.t-row > div.t-col > span > b').map(function(x) {
-								return $(this).text();
-							}).toArray();
-							var d_boxoffice = $('div.t-other-col > div.t-change-wrapper > div.t-change > div.t-row').map(function(x) {
-								var daily_boxoffice_str = $(this).children('div.t-col').eq(14).children('i.cs').eq(0).text();
-								daily_boxoffice_str = str_unicode_map(daily_boxoffice_str, unicode_mapping);
-								return daily_boxoffice_str;
-							}).toArray();
+						var d_dates = $('div.t-main-col > div.t-row > div.t-col > span > b').map(function(x) {
+							return $(this).text();
+						}).toArray();
+						var d_boxoffice = $('div.t-other-col > div.t-change-wrapper > div.t-change > div.t-row').map(function(x) {
+							var daily_boxoffice_str = $(this).children('div.t-col').eq(14).children('i.cs').eq(0).text();
+							daily_boxoffice_str = str_unicode_map(daily_boxoffice_str, unicode_mapping);
+							return daily_boxoffice_str;
+						}).toArray();
 
-							var daily_details = d_dates.map(function(d, i) {
-								return {
-									date: d,
-									boxoffice: d_boxoffice[i] === '--' ? 0 : +d_boxoffice[i]
-								};
-							});
-
+						var daily_details = d_dates.map(function(d, i) {
 							return {
-								id: movie.id,
-								name: movie.nm,
-								category: movie.cat,
-								rate: movie.sc,
-								release_date: movie.rt,
-								boxoffice: box_text,
-								onshow_days: daily_details.length,
-								daily_boxoffice: daily_details
+								date: d,
+								boxoffice: d_boxoffice[i] === '--' ? 0 : +d_boxoffice[i]
 							};
 						});
+
+						return {
+							id: movie.id,
+							name: movie.nm,
+							category: movie.cat,
+							rate: movie.sc,
+							release_date: movie.rt,
+							boxoffice: box_text,
+							onshow_days: daily_details.length,
+							daily_boxoffice: daily_details
+						};
+					});
 				}, {concurrency: 1}).then(function(films) {
 					return {
 						date: d,
