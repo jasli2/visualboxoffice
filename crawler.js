@@ -9,6 +9,7 @@ const opentype = require('opentype.js');
 var now = moment();
 var logfile = './logs/' + now.format("YYYY-MM-DD-HH-mm-ss") + '.log';
 const log = require('simple-node-logger').createSimpleFileLogger(logfile);
+//const log = require('simple-node-logger').createSimpleLogger();
 
 var getUrl = function(content_type, url_str) {
 	return new Promise((resolve, reject) => {
@@ -80,7 +81,7 @@ var bo = {
 	daily_boxoffice: []
 };
 
-const length_to_number = [64, 22, 78, 84, 18, 57, 89, 37, 102, 96];
+const number_position = [4, 1, 7, 5, 0, 2, 3, 6, 9, 8];
 function toArrayBuffer(buf) {
   var ab = new ArrayBuffer(buf.length);
   var view = new Uint8Array(ab);
@@ -91,14 +92,19 @@ function toArrayBuffer(buf) {
 }
 
 function get_unicode_mapping(base64_str) {
-	var ab = toArrayBuffer(new Buffer(base64_str, 'base64'));
+	//var ab = toArrayBuffer(new Buffer(base64_str, 'base64'));
+	var ab = toArrayBuffer(Buffer.from(base64_str, 'base64'));
 	var font = opentype.parse(ab);
 
 	var unicode_mapping = [];
+    var sort_a = [];
 	for(var i=2; i<12; i++) {
 		var l = font.glyphs.glyphs[i].getPath(0, 0, 72).commands.map(c => c.type).join('').length;
-		unicode_mapping[length_to_number.indexOf(l)] = font.glyphs.glyphs[i].unicode;
+        sort_a.push([l, font.glyphs.glyphs[i].unicode]);
 	}
+
+    sort_a.sort((a, b) => a[0] - b[0]);
+    sort_a.forEach((a, i) => unicode_mapping[number_position[i]] = a[1]);
 
 	return unicode_mapping;
 };
